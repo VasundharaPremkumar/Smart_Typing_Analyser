@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>TypeAI</title>
+
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap"
+      rel="stylesheet">
+
+</head>
+
+<body>
+
+<!-- VIDEO BACKGROUND -->
+
+<div class="video-container">
+
+    <video autoplay
+           muted
+           loop
+           playsinline>
+
+        <source src="/static/1000099820.mp4"
+                type="video/mp4">
+
+    </video>
+
+    <div class="overlay"></div>
+
+</div>
+
+<!-- FLOATING SHAPES -->
+
+<!-- FLOATING GEOMETRIC OBJECTS -->
+
+<div class="floating-shape square s1"></div>
+<div class="floating-shape square s2"></div>
+
+<div class="floating-shape circle s3"></div>
+<div class="floating-shape circle s4"></div>
+
+<div class="floating-shape diamond s5"></div>
+
+
+<div class="floating-shape line l1"></div>
+<div class="floating-shape line l2"></div>
+<div class="floating-shape line l3"></div>
+<div class="floating-shape square s9"></div>
+<div class="floating-shape square s10"></div>
+
+<div class="floating-shape circle s11"></div>
+<div class="floating-shape circle s12"></div>
+
+<div class="floating-shape diamond s13"></div>
+<div class="floating-shape diamond s14"></div>
+
+<div class="floating-shape hexagon s15"></div>
+<div class="floating-shape hexagon s16"></div>
+
+
+<!-- NAVBAR -->
+
+<nav class="navbar glass">
+
+    <div class="logo">
+
+        ⌨ Type <span>AI</span>
+
+    </div>
+
+    <div class="nav-links">
+
+        <a href="#features">Features</a>
+        <a href="#steps">How it Works</a>
+        <a href="#stats">Stats</a>
+
+    </div>
+
+    <div class="nav-buttons">
+
+        <button class="signin-btn"
+                onclick="window.location.href='/auth'">
+
+            Sign In
+
+        </button>
+
+        <button class="main-btn"
+                onclick="window.location.href='/auth'">
+
+            Get Started Free →
+
+        </button>
+
+    </div>
+
+</nav>
+
+<!-- HERO -->
+
+<section class="hero-section">
+
+    <div class="hero-top-tag">
+
+        AI-POWERED • REAL-TIME • ML CLASSIFIED
+
+    </div>
+
+    <h1>
+
+        Type at the Speed
+        <span>of Thought.</span>
+
+    </h1>
+
+    <h2>
+
+        Analyze. Improve. Master.
+
+    </h2>
+
+    <p>
+
+        Real-time WPM tracking, accuracy analytics,
+        and an ML model that classifies your skill level —
+        all in one intelligent platform.
+
+    </p>
+
+    <div class="hero-input glass">
+
+        <input type="text"
+               placeholder="Enter your name to get started...">
+
+        <button onclick="window.location.href='/auth'">
+
+            Start Free →
+
+        </button>
+
+    </div>
+
+    <div class="hero-bottom-tags">
+
+        <span>
+            ⚡ Real-time WPM tracking
+        </span>
+
+        <span>
+            🧠 ML Skill Classification
+        </span>
+
+        <span>
+            🎯 Accuracy Analytics
+        </span>
+
+    </div>
+
+</section>
+
+<!-- FEATURES -->
+
+<section class="features-section"
+         id="features">
+
+    <div class="section-title">
+
+        <small>
+            CORE FEATURES
+        </small>
+
+        <h1>
+            Everything you need to
+            <span>become elite</span>
+        </h1>
+
+    </div>
+
+    <div class="feature-grid">
+
+        <div class="feature-card glass">
+
+            <div class="icon red">
+                ⚡
+            </div>
+
+            <h2>
+                Lightning Speed Tracking
+            </h2>
+
+            <p>
+                Measure words per minute in real-time with intelligent precision.
+            </p>
+
+            <span>
+                REAL-TIME WPM
+            </span>
+
+        </div>
+
+        <div class="feature-card glass">
+
+            <div class="icon purple">
+                🎯
+            </div>
+
+            <h2>
+                Deep Accuracy Analysis
+            </h2>
+
+            <p>
+                Understand exactly where you slow down or miss keystrokes.
+            </p>
+
+            <span>
+                ACCURACY ENGINE
+            </span>
+
+        </div>
+
+        <div class="feature-card glass">
+
+            <div class="icon cyan">
+                🤖
+            </div>
+
+            <h2>
+                AI Skill Classification
+            </h2>
+
+            <p>
+                ML model automatically classifies your typing skill level.
+            </p>
+
+            <span>
+                ML POWERED
+            </span>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- STATS -->
+
+<section class="stats-section"
+         id="stats">
+
+    <div class="stats-box glass">
+
+        <div class="stat-item">
+            <h1>10K+</h1>
+            <p>Active Users</p>
+        </div>
+
+        <div class="stat-item">
+            <h1>500K+</h1>
+            <p>Tests Taken</p>
+        </div>
+
+        <div class="stat-item">
+            <h1>87 WPM</h1>
+            <p>Avg Speed</p>
+        </div>
+
+        <div class="stat-item">
+            <h1>96%</h1>
+            <p>Accuracy Avg</p>
+        </div>
+
+    </div>
+
+</section>
+
+<!-- STEPS -->
+
+<section class="steps-section"
+         id="steps">
+
+    <div class="section-title">
+
+        <small>
+            PROCESS
+        </small>
+
+        <h1>
+            Up and running in
+            <span>three steps</span>
+        </h1>
+
+    </div>
+
+    <div class="steps-grid">
+
+        <div class="step-card glass">
+
+            <div class="step-number">
+                01
+            </div>
+
+            <h2>
+                Create Your Account
+            </h2>
+
+            <p>
+                Register and securely login into your TypeAI dashboard.
+            </p>
+
+        </div>
+
+        <div class="step-card glass">
+
+            <div class="step-number">
+                02
+            </div>
+
+            <h2>
+                Take a Typing Test
+            </h2>
+
+            <p>
+                Start typing and let the AI monitor your performance.
+            </p>
+
+        </div>
+
+        <div class="step-card glass">
+
+            <div class="step-number">
+                03
+            </div>
+
+            <h2>
+                Get AI Analysis
+            </h2>
+
+            <p>
+                View WPM, mistakes, accuracy and skill classification.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- CTA -->
+
+<section class="cta-section">
+
+    <div class="cta-box glass">
+
+        <h1>
+            Ready to become
+            <span>an elite typist?</span>
+        </h1>
+
+        <p>
+            Join thousands improving typing speed and accuracy every day.
+        </p>
+
+        <div class="cta-buttons">
+
+            <button class="main-btn"
+                    onclick="window.location.href='/auth'">
+
+                Start Typing Free →
+
+            </button>
+
+            <button class="outline-btn"
+                    onclick="window.location.href='/auth'">
+
+                Sign In
+
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+<div class="glow glow1"></div>
+<div class="glow glow2"></div>
+<div class="glow glow3"></div>
+</body>
+</html>

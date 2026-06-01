@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TypeAI — Sign In</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:      #030712;
+      --bg2:     #0a0f1e;
+      --panel:   rgba(13,21,37,0.85);
+      --border:  rgba(0,245,255,0.12);
+      --cyan:    #00f5ff;
+      --violet:  #a855f7;
+      --green:   #00ff88;
+      --red:     #ff3b6b;
+      --text:    #e2e8f0;
+      --muted:   #64748b;
+      --mono:    'Space Mono', monospace;
+      --display: 'Outfit', sans-serif;
+    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html, body { height:100%; }
+
+    body {
+      font-family: var(--display);
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ── Particle Canvas ── */
+    #pc {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.3;
+    }
+
+    /* ── Background glow blobs ── */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 0;
+      animation: blobDrift 8s ease-in-out infinite alternate;
+    }
+    .blob1 { width:400px; height:400px; background:rgba(0,245,255,0.07); top:-100px; left:-100px; }
+    .blob2 { width:350px; height:350px; background:rgba(168,85,247,0.07); bottom:-80px; right:-80px; animation-delay:3s; }
+
+    @keyframes blobDrift {
+      from { transform: translate(0,0) scale(1); }
+      to   { transform: translate(30px,20px) scale(1.05); }
+    }
+
+    /* ── CARD ── */
+    .auth-card {
+      position: relative;
+      z-index: 1;
+      width: 440px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 40px 40px 36px;
+      backdrop-filter: blur(24px);
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.03);
+      animation: cardIn 0.6s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    @keyframes cardIn {
+      from { opacity:0; transform: translateY(40px) scale(0.97); }
+      to   { opacity:1; transform: translateY(0) scale(1); }
+    }
+
+    /* ── Logo ── */
+    .auth-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 32px;
+      justify-content: center;
+    }
+    .logo-accent { color: var(--cyan); }
+
+    /* ── Tabs ── */
+    .tab-row {
+      display: flex;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 4px;
+      margin-bottom: 32px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 11px;
+      border: none;
+      border-radius: 11px;
+      background: transparent;
+      color: var(--muted);
+      font-family: var(--display);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(0,245,255,0.15), rgba(168,85,247,0.15));
+      color: var(--text);
+      box-shadow: inset 0 0 0 1px rgba(0,245,255,0.2);
+    }
+
+    /* ── Forms ── */
+    .form-panel { display: none; }
+    .form-panel.active { display: block; animation: fadeUp 0.3s ease both; }
+
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(12px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    .form-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .form-sub {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+    .form-sub span { color: var(--cyan); }
+
+    .field {
+      margin-bottom: 18px;
+    }
+    .field label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 8px;
+      font-family: var(--mono);
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+    .input-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+    .field input {
+      width: 100%;
+      padding: 14px 16px 14px 46px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      color: var(--text);
+      font-family: var(--display);
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+    }
+    .field input::placeholder { color: var(--muted); }
+    .field input:focus {
+      border-color: rgba(0,245,255,0.4);
+      background: rgba(0,245,255,0.04);
+      box-shadow: 0 0 0 3px rgba(0,245,255,0.07);
+    }
+
+    /* ── Submit Button ── */
+    .submit-btn {
+      width: 100%;
+      padding: 15px;
+      margin-top: 8px;
+      background: linear-gradient(135deg, var(--cyan), var(--violet));
+      border: none;
+      border-radius: 14px;
+      color: #fff;
+      font-family: var(--display);
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      letter-spacing: 0.3px;
+    }
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(0,245,255,0.3);
+    }
+    .submit-btn:active { transform: translateY(0); }
+    .submit-btn.loading { opacity: 0.7; pointer-events: none; }
+
+    /* ── Error / Success message ── */
+    .msg-box {
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      margin-bottom: 18px;
+      display: none;
+      animation: fadeUp 0.3s ease;
+    }
+    .msg-box.error {
+      background: rgba(255,59,107,0.1);
+      border: 1px solid rgba(255,59,107,0.25);
+      color: #ff7b9a;
+      display: block;
+    }
+    .msg-box.success {
+      background: rgba(0,255,136,0.1);
+      border: 1px solid rgba(0,255,136,0.25);
+      color: var(--green);
+      display: block;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 22px 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Password toggle ── */
+    .pw-toggle {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 16px;
+      transition: color 0.2s;
+      padding: 0;
+    }
+    .pw-toggle:hover { color: var(--cyan); }
+
+    /* ── Strength indicator ── */
+    .strength-row {
+      display: flex;
+      gap: 5px;
+      margin-top: 8px;
+    }
+    .strength-bar {
+      flex: 1;
+      height: 3px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 99px;
+      transition: background 0.3s;
+    }
+    .strength-bar.weak   { background: var(--red); }
+    .strength-bar.medium { background: var(--violet); }
+    .strength-bar.strong { background: var(--green); }
+
+    .strength-label {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 5px;
+      font-family: var(--mono);
+    }
+
+    /* ── Footer note ── */
+    .auth-footer {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .auth-footer a { color: var(--cyan); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<canvas id="pc"></canvas>
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+
+<div class="auth-card">
+
+  <!-- Logo -->
+  <div class="auth-logo">
+    <span>⌨</span>
+    <span>Type<span class="logo-accent">AI</span></span>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tab-row">
+    <button class="tab-btn active" id="tabSignIn" onclick="switchTab('signin')">Sign In</button>
+    <button class="tab-btn"        id="tabRegister" onclick="switchTab('register')">Register</button>
+  </div>
+
+  <!-- ── SIGN IN PANEL ── -->
+  <div class="form-panel active" id="panelSignin">
+    <h2 class="form-title">Welcome back!</h2>
+    <p class="form-sub">Sign in to your <span>TypeAI</span> account</p>
+
+    <div class="msg-box" id="signinMsg"></div>
+
+    <div class="field">
+      <label>Username</label>
+      <div class="input-wrap">
+        <span class="input-icon">◈</span>
+        <input type="text" id="siUsername" placeholder="your_username" autocomplete="username"/>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Password</label>
+      <div class="input-wrap">
+        <span class="input-icon">🔒</span>
+        <input type="password" id="siPassword" placeholder="••••••••" autocomplete="current-password" id="siPassword"/>
+        <button class="pw-toggle" onclick="togglePw('siPassword', this)" type="button">👁</button>
+      </div>
+    </div>
+
+    <button class="submit-btn" id="signinBtn" onclick="doLogin()">Sign In →</button>
+  </div>
+
+  <!-- ── REGISTER PANEL ── -->
+  <div class="form-panel" id="panelRegister">
+    <h2 class="form-title">Create account</h2>
+    <p class="form-sub">Join <span>TypeAI</span> — it's free forever</p>
+
+    <div class="msg-box" id="registerMsg"></div>
+
+    <div class="field">
+      <label>Full Name</label>
+      <div class="input-wrap">
+        <span class="input-icon">👤</span>
+        <input type="text" id="regName" placeholder="Your Name" autocomplete="name"/>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Username</label>
+      <div class="input-wrap">
+        <span class="input-icon">◈</span>
+        <input type="text" id="regUsername" placeholder="choose_a_username" autocomplete="username"/>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Password</label>
+      <div class="input-wrap">
+        <span class="input-icon">🔒</span>
+        <input type="password" id="regPassword" placeholder="min. 6 characters" autocomplete="new-password" oninput="checkStrength(this.value)"/>
+        <button class="pw-toggle" onclick="togglePw('regPassword', this)" type="button">👁</button>
+      </div>
+      <div class="strength-row">
+        <div class="strength-bar" id="sb1"></div>
+        <div class="strength-bar" id="sb2"></div>
+        <div class="strength-bar" id="sb3"></div>
+      </div>
+      <div class="strength-label" id="strengthLabel"></div>
+    </div>
+
+    <button class="submit-btn" id="registerBtn" onclick="doRegister()">Create Account →</button>
+  </div>
+
+  <div class="auth-footer">
+    Secure · Private · No ads &nbsp;·&nbsp; <a href="#">Privacy Policy</a>
+  </div>
+
+</div>
+
+<script>
+/* ── Particles ── */
+(function(){
+  const c = document.getElementById("pc");
+  const x = c.getContext("2d");
+  const resize = () => { c.width = innerWidth; c.height = innerHeight; };
+  window.addEventListener("resize", resize); resize();
+  const pts = Array.from({length:70}, () => ({
+    x: Math.random()*innerWidth, y: Math.random()*innerHeight,
+    r: Math.random()*1.4+0.2, s: Math.random()*0.5+0.1,
+    dx:(Math.random()-.5)*.25, color:Math.random()<.6?"#00f5ff":"#a855f7",
+    a:Math.random()*.4+.08
+  }));
+  function loop(){
+    x.clearRect(0,0,c.width,c.height);
+    pts.forEach(p=>{
+      p.y-=p.s; p.x+=p.dx;
+      if(p.y<-5){ p.y=c.height+5; p.x=Math.random()*c.width; }
+      x.beginPath(); x.arc(p.x,p.y,p.r,0,Math.PI*2);
+      x.fillStyle=p.color; x.globalAlpha=p.a; x.fill();
+    });
+    x.globalAlpha=1; requestAnimationFrame(loop);
+  }
+  loop();
+})();
+
+/* ── Tab Switch ── */
+function switchTab(tab) {
+  const isSignin = tab === 'signin';
+  document.getElementById("tabSignIn").classList.toggle("active", isSignin);
+  document.getElementById("tabRegister").classList.toggle("active", !isSignin);
+  document.getElementById("panelSignin").classList.toggle("active", isSignin);
+  document.getElementById("panelRegister").classList.toggle("active", !isSignin);
+  clearMsgs();
+}
+
+function clearMsgs() {
+  ["signinMsg","registerMsg"].forEach(id=>{
+    const el = document.getElementById(id);
+    el.className = "msg-box"; el.innerText = "";
+  });
+}
+
+function showMsg(id, text, type) {
+  const el = document.getElementById(id);
+  el.innerText = text;
+  el.className = "msg-box " + type;
+}
+
+/* ── Password Toggle ── */
+function togglePw(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  if (inp.type === "password") { inp.type = "text"; btn.innerText = "🙈"; }
+  else { inp.type = "password"; btn.innerText = "👁"; }
+}
+
+/* ── Password Strength ── */
+function checkStrength(pw) {
+  const bars  = [document.getElementById("sb1"), document.getElementById("sb2"), document.getElementById("sb3")];
+  const label = document.getElementById("strengthLabel");
+  bars.forEach(b => b.className = "strength-bar");
+
+  if (!pw) { label.innerText = ""; return; }
+
+  let score = 0;
+  if (pw.length >= 6) score++;
+  if (pw.length >= 10 && /[A-Z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw) && /[^a-zA-Z0-9]/.test(pw)) score++;
+
+  const classes = ["weak","medium","strong"];
+  const labels  = ["Weak","Medium","Strong 🔒"];
+  for (let i = 0; i < score; i++) bars[i].classList.add(classes[score-1]);
+  label.innerText = labels[score-1] || "";
+}
+
+/* ── Login ── */
+async function doLogin() {
+  const btn      = document.getElementById("signinBtn");
+  const username = document.getElementById("siUsername").value.trim();
+  const password = document.getElementById("siPassword").value;
+
+  if (!username || !password) { showMsg("signinMsg","Please fill in all fields.","error"); return; }
+
+  btn.innerText = "Signing in..."; btn.classList.add("loading");
+
+  try {
+    const res  = await fetch("/api/login", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({username, password})
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      showMsg("signinMsg", `✓ Welcome back, ${data.name}! Redirecting...`, "success");
+      setTimeout(() => {
+
+    window.location.href = "/dashboard";
+
+}, 1000);
+    } else {
+      showMsg("signinMsg", data.message, "error");
+      btn.innerText = "Sign In →"; btn.classList.remove("loading");
+    }
+  } catch(e) {
+    showMsg("signinMsg","Connection error. Try again.","error");
+    btn.innerText = "Sign In →"; btn.classList.remove("loading");
+  }
+}
+
+/* ── Register ── */
+async function doRegister() {
+  const btn      = document.getElementById("registerBtn");
+  const name     = document.getElementById("regName").value.trim();
+  const username = document.getElementById("regUsername").value.trim();
+  const password = document.getElementById("regPassword").value;
+
+  if (!name || !username || !password) { showMsg("registerMsg","Please fill in all fields.","error"); return; }
+  if (password.length < 6) { showMsg("registerMsg","Password must be at least 6 characters.","error"); return; }
+
+  btn.innerText = "Creating account..."; btn.classList.add("loading");
+
+  try {
+    const res  = await fetch("/api/register", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({name, username, password})
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      showMsg("registerMsg", `✓ Account created! Welcome, ${data.name}! Redirecting...`, "success");
+      setTimeout(() => window.location.href = "/", 1000);
+    } else {
+      showMsg("registerMsg", data.message, "error");
+      btn.innerText = "Create Account →"; btn.classList.remove("loading");
+    }
+  } catch(e) {
+    showMsg("registerMsg","Connection error. Try again.","error");
+    btn.innerText = "Create Account →"; btn.classList.remove("loading");
+  }
+}
+
+/* ── Enter key support ── */
+document.addEventListener("keydown", e => {
+  if (e.key !== "Enter") return;
+  const signinActive = document.getElementById("panelSignin").classList.contains("active");
+  if (signinActive) doLogin(); else doRegister();
+});
+</script>
+</body>
+</html>

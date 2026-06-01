@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>TypeAI — Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="dashboard-body">
+
+<canvas id="particleCanvas" style="position:fixed; inset:0; pointer-events:none; z-index:0; opacity:0.35;"></canvas>
+<div class="glow glow1" style="position:fixed; border-radius:50%; filter:blur(120px); z-index:-2; opacity:0.12; width:400px; height:400px; background:#00d9ff; top:-100px; left:-100px;"></div>
+<div class="glow glow2" style="position:fixed; border-radius:50%; filter:blur(120px); z-index:-2; opacity:0.12; width:500px; height:500px; background:#8b5cf6; bottom:-200px; right:-100px;"></div>
+
+<div class="dashboard-container">
+    <div class="sidebar">
+        <h2 class="logo">⌨ Type<span>AI</span></h2>
+        <ul>
+            <li onclick="scrollToSection('statsSection')"><span>📊 Dashboard</span></li>
+            <li onclick="scrollToSection('typingSection')"><span>⌨ Typing Test</span></li>
+            <li onclick="scrollToSection('analyticsSection')"><span>📈 Analytics</span></li>
+            <li onclick="scrollToSection('historySection')"><span>🕒 History</span></li>
+            <li onclick="window.location.href='/logout'" class="logout-item"><span>🚪 Logout</span></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <section id="statsSection">
+            <h1 class="welcome">Welcome Back, {{ username }} 👋</h1>
+            
+            <div class="stats-grid">
+                <div class="card">
+                    <h2 id="wpm">0</h2>
+                    <p>WPM</p>
+                    <div class="stat-bar-container"><div class="stat-bar-fill" id="wpmBar"></div></div>
+                </div>
+
+                <div class="card">
+                    <h2 id="accuracy">0%</h2>
+                    <p>Accuracy</p>
+                    <div class="stat-bar-container"><div class="stat-bar-fill" id="accBar"></div></div>
+                </div>
+
+                <div class="card">
+                    <h2 id="mistakes">0</h2>
+                    <p>Session Mistakes</p>
+                    <div class="stat-bar-container"><div class="stat-bar-fill error-bar" id="errBar"></div></div>
+                </div>
+
+                <div class="card">
+                    <h2 id="level">Beginner</h2>
+                    <p>Predicted Level</p>
+                    <div class="level-indicator">
+                        <span class="ldot active"></span>
+                        <span class="ldot"></span>
+                        <span class="ldot"></span>
+                        <span class="ldot"></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="typingSection">
+            <div class="typing-header-controls">
+                <div class="timer-circle-wrap">
+                    <svg class="timer-svg" viewBox="0 0 120 120">
+                        <circle class="timer-bg-circle" cx="60" cy="60" r="52"></circle>
+                        <circle class="timer-progress-circle" id="timerRing" cx="60" cy="60" r="52" stroke="url(#timerGrad)" stroke-dasharray="326.7" stroke-dashoffset="0" transform="rotate(-90 60 60)"></circle>
+                    </svg>
+                    <div class="timer-text-container">
+                        <span id="timer">60</span><small>s</small>
+                    </div>
+                </div>
+
+                <div class="difficulty-box">
+                    <label>Select Difficulty</label>
+                    <div class="difficulty-options">
+                        <label class="diff-radio"><input type="radio" name="difficulty" value="easy" checked><span>Easy</span></label>
+                        <label class="diff-radio"><input type="radio" name="difficulty" value="medium"><span>Medium</span></label>
+                        <label class="diff-radio"><input type="radio" name="difficulty" value="hard"><span>Hard</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sample-box glass">
+                <p id="sampleText" style="line-height:1.6; font-size:1.25rem; letter-spacing:0.5px;"></p>
+            </div>
+
+            <div class="progress-box-wrapper">
+                <div class="progress-box"><div id="progressBar"></div></div>
+                <span id="progressLabel">Sentence Progression: 0%</span>
+            </div>
+
+            <textarea id="inputText" placeholder="Click 'Start Test' and type the current sentence text accurately here..."></textarea>
+
+            <div class="btn-group">
+                <button id="startBtn">▶ Start Test</button>
+                <button id="restartBtn">🔄 Restart</button>
+            </div>
+        </section>
+
+        <section id="insightsSection">
+            <div class="insights-container card glass">
+                <h3>💡 AI Typing Insights & Live Meta Counter</h3>
+                <p id="suggestion">Start typing to generate personalized behavioral suggestions...</p>
+                <p style="font-size:12px; color:#a855f7; margin-top:5px;" id="liveMetaCounters">Live Session Totals: 0 Backspaces | 0 Sentence Shifts</p>
+                <div class="insights-metrics">
+                    <div class="insight-item">
+                        <span>Speed Index:</span>
+                        <div class="insight-bar"><div class="insight-bar-fill speed" id="speedFill"></div></div>
+                    </div>
+                    <div class="insight-item">
+                        <span>Precision Index:</span>
+                        <div class="insight-bar"><div class="insight-bar-fill precision" id="precFill"></div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="analyticsSection">
+            <div class="chart-container glass">
+                <h3>📈 Performance Progression Analytics</h3>
+                <div class="chart-canvas-wrap" style="position: relative; height:320px; width:100%;">
+                    <canvas id="typingChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="historySection">
+            <div class="history-container glass">
+                <div class="history-header">
+                    <h2>Previous Test Records</h2>
+                    <span id="histCount" class="badge">0 attempts</span>
+                </div>
+                <div id="historyButtons" class="history-buttons"></div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<script>
+function scrollToSection(sectionId){
+    const el = document.getElementById(sectionId);
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
+</script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
